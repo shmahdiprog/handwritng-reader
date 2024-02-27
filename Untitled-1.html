@@ -1,0 +1,136 @@
+
+<!DOCTYPE html><meta charset="utf-8"><html>
+  <head>
+    <link rel="stylesheet" href="style.css">
+    <title>The handwriting reader project ـ Mahdi Shafiee</title>
+    <h1 style="font-family: lalezar">Hello</h1>
+    <h2 style="font-family: lalezar">wellcome to my project</h2>
+    <h3 style="font-family: vazir">If you want to use from this project you can draw " JUST ONE" small english letter by your mouse and the programe will transform it to a real letter and will type it right here</h3>
+    <h2 style="font-family: lalezar">I hope you enjoy my project</h2>
+    <p style="background-image: url('img.jpeg');"></p>
+  </head>
+  <body>
+    
+    <!--script>function omm(){alert(1);};</script-->
+    <!--h1>Hopfield Artificial Neural Network</h1-->
+    <!--h2>Script Recognizer</h2--> <label id=lblno style="font-size: larger;">XXX</label><br>
+    <canvas id="cnv" width=400 height=400 onmousedown="omd();" onmouseup="omu();"  onmousemove="omm(event)" style="background: rgb(59, 69, 69)">
+    no canvas</canvas><br>
+    <button onclick="Clear()">Clear</button>
+    <button onclick="Read()">Read</button>
+    <script src="lib/synaptic.js" language="JavaScript" type="text/javascript"></script>
+    <script>
+    let pix=[];
+    let pen_dn=0;
+    let str=[],str_i=0;
+    let str_top=400,str_bot=0,str_lft=400,str_rgt=0;
+    let pat=[];
+    let cnv=document.getElementById("cnv");
+    let t=cnv.getContext("2d");
+    "abcdefghijklmnopqrstuvwxyz"
+    pat[0]=[0,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1, 1,0,0,1,1, 1,1,1,1,1];
+    pat[1]=[1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,1, 1,1,0,0,1, 1,1,1,1,1];
+    pat[2]=[1,1,1,1,0, 1,0,0,1,1, 1,0,0,0,0, 1,0,0,0,1, 1,1,1,1,1];
+    pat[3]=[0,0,0,0,1, 0,0,0,0,1, 1,1,1,1,1, 1,0,0,1,1, 1,1,1,1,1];
+    pat[4]=[0,1,1,1,0, 1,0,0,1,1, 1,1,1,1,1, 1,1,0,0,0, 0,1,1,1,1];
+    pat[5]=[0,0,1,1,1, 1,1,1,1,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0];
+    pat[6]=[0,1,1,1,1, 1,1,1,1,1, 0,0,0,0,1, 0,1,0,0,1, 0,1,1,1,1];
+    pat[7]=[1,0,0,0,0, 1,0,0,0,0, 1,1,1,1,1, 1,0,0,0,1, 1,0,0,0,1];
+    pat[8]=[0,0,1,0,0, 0,0,0,0,0, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0];
+    pat[9]=[0,0,1,0,0, 0,0,0,1,0, 0,0,0,1,0, 1,1,0,1,1, 1,1,1,1,1];
+    pat[10]=[1,0,0,0,0, 1,0,1,1,0, 0,1,1,0,0, 1,1,1,1,0, 0,1,0,1,1];
+    pat[11]=[0,1,0,0,0, 0,1,0,0,0, 0,1,0,0,0, 0,1,0,0,0, 0,1,1,1,0];
+    pat[12]=[1,1,1,1,0, 1,0,1,1,1, 1,0,1,0,1, 1,0,1,0,1, 1,0,1,0,1];
+    pat[13]=[1,1,1,1,0, 1,1,0,1,1, 1,0,0,0,1, 1,1,0,0,1, 1,1,0,0,1];
+    pat[14]=[0,1,1,1,0, 1,1,0,1,1, 1,0,0,0,1, 1,1,0,1,1, 0,1,1,1,0];
+    pat[15]=[1,1,1,1,1, 1,1,1,1,1, 0,0,1,0,0, 0,0,1,0,0, 0,0,1,0,0];
+    pat[16]=[1,1,1,1,1, 1,1,1,1,1, 0,1,1,1,0, 0,0,0,1,1, 0,0,0,1,1];
+    pat[17]=[0,1,1,1,1, 1,1,0,0,0, 1,0,0,0,0, 1,1,0,0,0, 1,1,0,0,0];
+    pat[18]=[1,1,1,1,1, 1,1,0,0,0, 0,1,1,1,1, 0,0,0,0,1, 1,1,1,1,1];
+    pat[19]=[0,1,0,0,0, 1,1,1,1,1, 0,1,0,0,0, 0,1,0,0,0, 0,1,1,1,1];
+    pat[20]=[1,0,0,1,0, 1,0,0,1,0, 1,0,0,1,0, 1,1,0,1,0, 0,1,1,1,1];
+    pat[21]=[1,0,0,0,1, 1,0,0,1,0, 0,1,0,1,0, 0,1,1,1,0, 0,0,1,0,0];
+    pat[22]=[1,0,1,0,1, 1,0,1,0,1, 1,1,1,0,1, 0,1,1,1,1, 0,1,0,1,0];
+    pat[23]=[1,1,0,1,1, 0,1,1,1,0, 0,0,1,0,0, 0,1,1,1,0, 1,1,0,1,1];
+    pat[24]=[1,0,0,0,1, 1,1,0,0,1, 0,1,1,1,1, 0,0,0,0,1, 0,1,1,1,0];
+    pat[25]=[1,1,1,1,1, 0,0,1,1,0, 0,0,1,0,0, 0,1,1,0,0, 1,1,1,1,1];   
+    let hopfield = new synaptic.Architect.Hopfield(25);
+    hopfield.learn([pat[0],pat[1],pat[2],pat[3],pat[4],pat[5],pat[6],pat[7],pat[8],pat[9],pat[10],pat[11],pat[12],pat[13],pat[14],pat[15],pat[16],pat[17],pat[18],pat[19],pat[20],pat[21],pat[22],pat[23],pat[24],pat[25]]);
+    
+    function Clear(){
+      t.clearRect(0,0,400,400);
+      str_top=400,str_bot=0,str_lft=400,str_rgt=0;
+      str_i=0;
+    }
+    function map_it(b,e,left,right,x){
+      return Math.floor(( (x-left)*(e-b)/(right-left))+b);
+    }
+    function Read(){
+      let i,j,match,ret;
+      // stretch() & get pixels str-->pix
+      // feed to HF
+      for(i=0;i<str_i;i++) 
+        pix[map_it(0,5,str_lft-10,str_rgt+10,str[i].x)+
+            map_it(0,5,str_top-10,str_bot+10,str[i].y)*5]++;
+      for(i=0;i<26;i++)
+        if(pix[i]>0){ pix[i]=1;
+          t.strokeStyle="rgb(255, 255, 255)";
+          t.beginPath();
+          t.arc(40+(i%5)*80,40+Math.floor(i/5)*80,30,0,6.5);
+          t.stroke();
+        }
+      //ret=hopfield.feed(pix);
+      ret=MinEditDist(pix);
+      lblno.innerHTML="abcdefghijklmnopqrstuvwxyz"[ret];
+      // match & get the result
+      for(i=0;i<26;i++)
+        if(ret[i]>0){ 
+          t.beginPath();
+          t.strokeStyle="rgb(255, 255, 255)";
+          t.arc(40+(i%5)*80,40+Math.floor(i/5)*80,20,0,6.5);
+          t.stroke();
+        }
+      for(i=0;i<26;i++){
+        match=1;
+        for(j=0;j<25;j++)
+          if(ret[j]!=pat[i][j]) match=0;
+        if(match==1) lblno.innerHTML="abcdefghijklmnopqrstuvwxyz"[i];
+      }
+    }
+    
+    function omm(e) {
+      let xx,yy,rect = cnv.getBoundingClientRect();
+      xx=e.clientX-rect.left;
+      yy=e.clientY-rect.top;
+      if(pen_dn) {
+        str[str_i++]={x:xx,y:yy};
+        t.strokeStyle="rgb(255, 255, 255)";
+        t.beginPath();
+        t.arc(xx,yy, 3, 0, 2 * Math.PI);
+        t.stroke();
+        for(let i=0;i<25;i++) pix[i]=0;
+        if(str_top>yy) str_top=yy;
+        if(str_bot<yy) str_bot=yy;
+        if(str_lft>xx) str_lft=xx;
+        if(str_rgt<xx) str_rgt=xx;
+      }
+    }
+    function omd() {pen_dn=1;}
+    
+    function omu() {pen_dn=0;}
+    
+    function dl(n) { document.write(n+"<br>"); }
+    function MinEditDist(s){
+      let i,j,n,dist=0,mindist=25,mindisti=25;
+      for(i=0;i<26;i++){
+        for(j=dist=0;j<25;j++) if(pat[i][j]!=s[j]) dist++;
+        if(dist<mindist){
+          mindisti=i;
+          mindist=dist;
+        }
+      }
+      return mindisti;
+    }
+    </script>
+
+    </body></html>
